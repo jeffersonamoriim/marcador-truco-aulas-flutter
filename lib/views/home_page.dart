@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> {
                       },
                       cancel: () {
                         setState(() {
+                        
                         _playerOne.score = 0;
                         _playerTwo.score = 0;
                         });
