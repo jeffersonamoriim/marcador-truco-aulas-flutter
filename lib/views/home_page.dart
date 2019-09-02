@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marcador_truco/models/player.dart';
+import 'package:screen/screen.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -73,7 +74,19 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          _showPlayerName(player.name),
+          _showPlayerName(name: player.name, onTap: (){
+            _changeNameDialog(name: player.name, confirm: (){
+              setState(() {
+                if (_textFieldController.text == "")
+                player.name = player.name;
+                else
+                player.name = _textFieldController.text;
+                _textFieldController.text = "";
+              });
+            }, cancel: (){
+              _textFieldController.text = "";
+            });
+          }),
           _showPlayerScore(player.score),
           _showPlayerVictories(player.victories),
           _showScoreButtons(player),
@@ -82,14 +95,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _showPlayerName(String name) {
-    return Text(
+  Widget _showPlayerName({String name, Function onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Text(
       name.toUpperCase(),
       style: TextStyle(
-          fontSize: 22.0,
+          decoration: TextDecoration.underline,
+          fontSize: 35.0,
           fontWeight: FontWeight.w500,
           color: Colors.deepOrange),
-    );
+    ),
+);
   }
 
   Widget _showPlayerVictories(int victories) {
@@ -139,6 +156,9 @@ class _HomePageState extends State<HomePage> {
           onTap: () {
             setState(() {
               player.score--;
+              if(player.score <= 0 ){
+                player.score = 0;
+              }
             });
           },
         ),
@@ -149,6 +169,14 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               player.score++;
             });
+
+            if (_playerOne.score == 11 && _playerTwo.score == 11){
+              _showDialog(
+                title: "Mão de Ferro",
+                message: "Mão de Onze especial, quando as duas duplas conseguem chegar a 11 pontos na partida. Todos os jogadores recebem as cartas “cobertas”, isto é, viradas para baixo, e deverão jogar assim. Quem vencer a mão, vence a partida",
+                confirm: (){},
+              );
+            }
 
             if (player.score == 12) {
               _showDialog(
@@ -173,9 +201,44 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  TextEditingController _textFieldController = TextEditingController();
+
+  void _changeNameDialog({String name, Function confirm, Function cancel}) async {
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Alterar Nome"),
+          content: TextField(
+            controller: _textFieldController,
+            decoration: InputDecoration(hintText: "Nome"),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("CANCEL"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _textFieldController.text = " ";
+                if (cancel != null) cancel();
+              },
+            ),
+            new FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (confirm != null) confirm();
+              },
+            ),
+          ],
+        );
+      });
+  }
+
   void _showDialog(
       {String title, String message, Function confirm, Function cancel}) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
