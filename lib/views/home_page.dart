@@ -44,7 +44,19 @@ class _HomePageState extends State<HomePage> {
                   message:
                       'Tem certeza que deseja começar novamente a pontuação?',
                   confirm: () {
-                    _resetPlayers();
+                    _showDialog(
+                      title: 'Zerar Vitorias ?',
+                      message: 'Pressione OK caso queira zerar as vitórias também',
+                      confirm: () {
+                        _resetPlayers();
+                      },
+                      cancel: () {
+                        setState(() {
+                        _playerOne.score = 0;
+                        _playerTwo.score = 0;
+                        });
+                      }
+                    );
                   });
             },
             icon: Icon(Icons.refresh),
@@ -94,6 +106,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
 
   Widget _showPlayerName({String name, Function onTap}) {
     return GestureDetector(
