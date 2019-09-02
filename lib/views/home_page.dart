@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
       name.toUpperCase(),
       style: TextStyle(
           decoration: TextDecoration.underline,
-          fontSize: 35.0,
+          fontSize: 25.0,
           fontWeight: FontWeight.w500,
           color: Colors.deepOrange),
     ),
